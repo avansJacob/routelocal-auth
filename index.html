@@ -23,33 +23,52 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
             max-width: 400px; 
             width: 100%; 
+            border: 1px solid #eaeaea;
         }
         h1 { 
-            color: #FF9800; /* RouteLocal Orange */
             margin-top: 0;
-            font-size: 28px;
+            font-size: 32px;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .brand-black { color: #000000; }
+        .brand-orange { color: #FF5722; }
+        
+        h2 {
+            color: #222222;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 16px;
         }
         p { 
-            color: #555; 
+            color: #555555; 
             line-height: 1.6; 
             font-size: 16px;
+            margin-bottom: 24px;
         }
         .highlight {
-            font-weight: bold;
-            color: #222;
-            margin-top: 24px;
-            padding: 12px;
-            background-color: #FFF3E0;
+            font-weight: 500;
+            color: #222222;
+            padding: 16px;
+            background-color: #FFF3EE;
             border-radius: 8px;
+            border-left: 4px solid #FF5722;
+            text-align: left;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>🎉 Confirmed!</h1>
+        <h1>
+            <span class="brand-black">Route</span><span class="brand-orange">Local</span>
+        </h1>
+        
+        <h2>🎉 Confirmed!</h2>
         <p>Your email address has been successfully verified.</p>
+        
         <div class="highlight">
-            You can now safely close this browser window, return to the RouteLocal app, and Sign In.
+            <strong>Next Step:</strong> You can now safely close this browser window, return to the RouteLocal app, and Sign In with the same email and password you used to create the account.
         </div>
     </div>
 </body>
