@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RouteLocal - Account Deletion</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #F5F5F5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center; }
+        h2 { color: #111; margin-top: 0; }
+        p { color: #555; font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+        input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; background-color: #FF5722; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background-color: #E64A19; }
+        .error { color: #D32F2F; font-size: 14px; margin-bottom: 16px; display: none; }
+        .success { color: #388E3C; font-size: 16px; font-weight: bold; display: none; }
+        #loginForm { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Delete Account</h2>
+    
+    <div id="successMessage" class="success">
+        Your account and all associated data have been permanently deleted.
+    </div>
+
+    <div id="loginForm">
+        <p>To permanently delete your RouteLocal account and all your data, please verify your identity by logging in below.</p>
+        
+        <div id="errorMessage" class="error"></div>
+
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Password" required>
+        
+        <button id="deleteBtn" onclick="verifyAndDelete()">Verify & Delete My Account</button>
+    </div>
+</div>
+
+<script>
+    // 🚨 PASTE YOUR SUPABASE KEYS HERE
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function verifyAndDelete() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const btn = document.getElementById('deleteBtn');
+        const errorDiv = document.getElementById('errorMessage');
+
+        if (!email || !password) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = "Please enter both email and password.";
+            return;
+        }
+
+        btn.innerText = "Verifying...";
+        btn.disabled = true;
+        errorDiv.style.display = 'none';
+
+        // 1. VERIFY THE USER
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+
+        if (authError) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = "Incorrect email or password. Cannot delete account.";
+            btn.innerText = "Verify & Delete My Account";
+            btn.disabled = false;
+            return;
+        }
+
+        // 2. TRIGGER THE DELETION
+        btn.innerText = "Deleting Data...";
+        const { error: rpcError } = await supabase.rpc('delete_my_account');
+
+        if (rpcError) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = "An error occurred while deleting your data. Please try again.";
+            btn.innerText = "Verify & Delete My Account";
+            btn.disabled = false;
+            return;
+        }
+
+        // 3. WIPE THE SESSION & SHOW SUCCESS
+        await supabase.auth.signOut();
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
