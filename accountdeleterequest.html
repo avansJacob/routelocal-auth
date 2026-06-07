@@ -128,10 +128,11 @@
 
 <script>
     // 🚨 PASTE YOUR SUPABASE KEYS HERE
-    const SUPABASE_URL = 'https://ajjokwiztuiphzmhftny.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqam9rd2l6dHVpcGh6bWhmdG55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NzQzNjcsImV4cCI6MjA4ODE1MDM2N30.rSKz3BJU3CJ5PqgCv7oucHk1UYcytXj4K7-wbfoQ9Gg';
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // 🚨 THE FIX: Renamed the variable to 'supabaseClient' so it doesn't clash!
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function verifyAndDelete() {
         const email = document.getElementById('email').value;
@@ -149,8 +150,8 @@
         btn.disabled = true;
         errorDiv.style.display = 'none';
 
-        // 1. VERIFY THE USER
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        // 1. VERIFY THE USER (Using supabaseClient)
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password,
         });
@@ -163,9 +164,9 @@
             return;
         }
 
-        // 2. TRIGGER THE DELETION
+        // 2. TRIGGER THE DELETION (Using supabaseClient)
         btn.innerText = "Deleting Data...";
-        const { error: rpcError } = await supabase.rpc('delete_my_account');
+        const { error: rpcError } = await supabaseClient.rpc('delete_my_account');
 
         if (rpcError) {
             errorDiv.style.display = 'block';
@@ -175,8 +176,8 @@
             return;
         }
 
-        // 3. WIPE THE SESSION & SHOW SUCCESS
-        await supabase.auth.signOut();
+        // 3. WIPE THE SESSION & SHOW SUCCESS (Using supabaseClient)
+        await supabaseClient.auth.signOut();
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
     }
